@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hadj Soundous — Projects</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:       #e8293b;
+      --red-dim:   #a01b27;
+      --red-glow:  rgba(232, 41, 59, 0.25);
+      --bg:        #0a0305;
+      --surface:   #110508;
+      --text:      #f0e8e8;
+      --muted:     #7a6068;
+      --border:    rgba(232,41,59,0.18);
+    }
+
+    body.light-mode {
+      --bg:        #F8F8F8;
+      --surface:   #ffffff;
+      --text:      #121212;
+      --muted:     #555555;
+      --border:    rgba(232,41,59,0.25);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* ── CANVAS BACKGROUND ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── PAGE LAYOUT ── */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 52px;
+      border-bottom: 1px solid rgba(232,41,59,.16);
+      background: rgba(10,3,5,.62);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    body.light-mode nav {
+      background: rgba(255,255,255,0.75);
+      border-bottom-color: rgba(232,41,59,0.18);
+    }
+
+    .logo {
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo img {
+      height: 60px;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    }
+
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      list-style: none;
+    }
+
+    .nav-actions {
+      position: absolute;
+      right: 52px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-links a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 34px;
+      padding: 0 16px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background: transparent;
+      color: rgba(255,255,255,.65);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all .3s ease;
+    }
+
+    body.light-mode .nav-links a {
+      color: rgba(18,18,18,0.65);
+    }
+
+    .nav-links a:hover {
+      color: var(--red);
+      border-color: var(--red);
+      background: rgba(232,41,59,.08);
+    }
+
+    .nav-links a:active { transform: scale(.94); }
+
+    .nav-links a.active {
+      color: var(--red);
+      border: 1px solid var(--red);
+      background: rgba(232,41,59,.08);
+    }
+
+    .nav-btn {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.18);
+      color: #fff;
+      cursor: pointer;
+      transition: .3s ease;
+      flex-shrink: 0;
+    }
+
+    body.light-mode .nav-btn {
+      background: rgba(18,18,18,0.05);
+      border-color: rgba(18,18,18,0.12);
+      color: #121212;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 8px 20px rgba(0,0,0,.08);
+    }
+
+    .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; }
+
+    .nav-btn:hover {
+      background: rgba(232,41,59,.08);
+      border-color: var(--red);
+      box-shadow: 0 8px 24px rgba(232,41,59,.20);
+      transform: translateY(-2px);
+    }
+
+    body.light-mode .nav-btn:hover { color: var(--red); }
+    .nav-btn:active { transform: scale(.94); }
+
+    .nav-toggle-input { display: none; }
+
+    /* Hamburger is hidden on desktop, shown as a flex item inside nav-actions on mobile */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      padding: 4px;
+      z-index: 2;
+      flex-shrink: 0;
+    }
+
+    /* ── THEME ICON SWAP ── */
+    .icon-sun { display: block; }
+    .icon-moon { display: none; }
+    body.light-mode .icon-sun { display: none; }
+    body.light-mode .icon-moon { display: block; }
+
+    /* ── PROJECTS HERO ── */
+    .projects-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 52px 70px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .projects-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse at center, rgba(232,41,59,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeSlideUp 0.8s ease 0.1s forwards;
+    }
+
+    .projects-hero-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 22px;
+      opacity: 0;
+      animation: fadeSlideUp 0.8s ease 0.2s forwards;
+    }
+
+    .projects-hero-title .white { color: var(--text); }
+    .projects-hero-title .red   { color: var(--red); }
+
+    .projects-hero-subtitle {
+      font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+      color: var(--muted);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      max-width: 480px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeSlideUp 0.8s ease 0.3s forwards;
+      transition: color 0.3s ease;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); filter: blur(4px); }
+      to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+    }
+
+    /* ── PROJECTS SECTION ── */
+    .projects-section {
+      padding: 20px 52px 100px;
+      flex: 1;
+    }
+
+    /* ── PROJECTS GRID ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* ── PROJECT CARD ── */
+    .project-card {
+      position: relative;
+      background: rgba(17, 5, 8, 0.7);
+      border: 1px solid rgba(232,41,59,0.12);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+      cursor: pointer;
+      will-change: transform;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+
+      /* Staggered entrance – set by JS */
+      opacity: 0;
+      transform: translateY(40px);
+      filter: blur(6px);
+    }
+
+    body.light-mode .project-card {
+      background: rgba(255,255,255,0.85);
+      border-color: rgba(232,41,59,0.14);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+
+    .project-card.in-view {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    .project-card:hover {
+      border-color: var(--red);
+      box-shadow: 0 0 0 1px var(--red), 0 20px 60px rgba(232,41,59,0.2), 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    /* Cursor glow */
+    .card-glow {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,41,59,0.18) 0%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .project-card:hover .card-glow { opacity: 1; }
+
+    /* ── IMAGE AREA ── */
+    .card-image {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      background: rgba(232,41,59,0.04);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .card-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(10,3,5,0.85) 100%);
+      z-index: 2;
+      transition: opacity 0.4s ease;
+    }
+
+    body.light-mode .card-image::after {
+      background: linear-gradient(180deg, transparent 40%, rgba(248,248,248,0.85) 100%);
+    }
+
+    /* Placeholder grid pattern when no image */
+    .card-image-inner {
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(232,41,59,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,41,59,0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* When a real <img> is inserted inside .card-image, it will use this: */
+    .card-image img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 1;
+    }
+
+    .project-card:hover .card-image img,
+    .project-card:hover .card-image-inner {
+      transform: scale(1.07) translateY(-2px);
+    }
+
+    /* ── STATUS PILL on image ── */
+    .card-status {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* COMPLETED — green */
+    .card-status.completed {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.45);
+      color: #22c55e;
+    }
+    .card-status.completed .status-dot { background: #22c55e; }
+
+    /* IN PROGRESS — red */
+    .card-status.in-progress {
+      background: rgba(232, 41, 59, 0.15);
+      border: 1px solid rgba(232, 41, 59, 0.45);
+      color: var(--red);
+    }
+    .card-status.in-progress .status-dot { background: var(--red); }
+
+    /* PLANNED — blue */
+    .card-status.planned {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #3b82f6;
+    }
+    .card-status.planned .status-dot { background: #3b82f6; }
+
+    .status-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── CARD BODY ── */
+    .card-body {
+      padding: 22px 22px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      transition: color 0.3s ease;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      line-height: 1.65;
+      color: var(--muted);
+      font-weight: 400;
+      transition: color 0.3s ease;
+    }
+
+    /* ── BADGES ── */
+    .card-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(232,41,59,0.07);
+      border: 1px solid rgba(232,41,59,0.2);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(232,41,59,0.85);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s ease, color 0.25s ease;
+    }
+
+    body.light-mode .badge {
+      background: rgba(232,41,59,0.06);
+      color: var(--red-dim);
+    }
+
+    .project-card:hover .badge {
+      background: rgba(232,41,59,0.14);
+      color: var(--red);
+    }
+
+    .project-card:hover .badge:nth-child(1) { transform: translateY(-3px); transition-delay: 0ms; }
+    .project-card:hover .badge:nth-child(2) { transform: translateY(-3px); transition-delay: 50ms; }
+    .project-card:hover .badge:nth-child(3) { transform: translateY(-3px); transition-delay: 100ms; }
+    .project-card:hover .badge:nth-child(4) { transform: translateY(-3px); transition-delay: 150ms; }
+    .project-card:hover .badge:nth-child(5) { transform: translateY(-3px); transition-delay: 200ms; }
+
+    /* ── CARD FOOTER / BUTTONS ── */
+    .card-footer {
+      padding: 0 22px 22px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 8px 16px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, opacity 0.25s ease, color 0.25s ease;
+      will-change: transform;
+    }
+
+    .btn-card-primary {
+      background: var(--red);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(232,41,59,0.25);
+    }
+
+    .btn-card-primary:hover {
+      background: #c9202f;
+      box-shadow: 0 6px 24px rgba(232,41,59,0.45);
+      transform: translateY(-2px);
+    }
+
+    .btn-card-ghost {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.7);
+    }
+
+    body.light-mode .btn-card-ghost {
+      background: rgba(18,18,18,0.04);
+      border-color: rgba(18,18,18,0.14);
+      color: rgba(18,18,18,0.65);
+    }
+
+    .btn-card-ghost:hover {
+      background: rgba(232,41,59,0.08);
+      border-color: var(--red);
+      color: var(--red);
+      transform: translateY(-2px);
+    }
+
+    .btn-card svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      width: 100%;
+      padding: 70px 20px 35px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 35px;
+      border-top: 1px solid rgba(232,41,59,.18);
+      background: rgba(77, 2, 2, 0.4);
+      position: relative;
+      transition: background 0.3s ease;
+    }
+
+    body.light-mode footer {
+      background: rgba(255,255,255,0.92);
+      border-top-color: rgba(232,41,59,0.2);
+    }
+
+    .footer-logo { width: 110px; height: auto; opacity: .9; }
+
+    .footer-copy {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,.45);
+      text-align: center;
+      transition: color 0.3s ease;
+    }
+
+    body.light-mode .footer-copy { color: rgba(18,18,18,0.5); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; 
+      }
+
+      .nav-toggle {
+        display: inline-flex;
+      }
+
+      .nav-toggle span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: var(--text);
+        border-radius: 999px;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+      }
+
+      .nav-actions {
+        position: absolute;
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+        gap: 12px;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 24px;
+        right: 24px;
+        transform: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 12px;
+        border: 1px solid rgba(232,41,59,0.16);
+        border-radius: 16px;
+        background: rgba(10,3,5,0.9);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-8px);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+
+      body.light-mode .nav-links { background: rgba(255,255,255,0.95); }
+
+      .nav-links a {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.60);
+        text-decoration: none;
+        transition: all .3s ease;
+      }
+
+      body.light-mode .nav-links a { color: rgba(18,18,18,0.65); }
+
+      .nav-toggle-input:checked ~ .nav-links {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .nav-toggle-input:checked ~ .nav-actions .nav-toggle span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+      .nav-toggle-input:checked ~ .nav-actions .nav-toggle span:nth-child(2) { opacity: 0; }
+      .nav-toggle-input:checked ~ .nav-actions .nav-toggle span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+      .projects-hero { padding: 70px 24px 50px; }
+      .projects-section { padding: 10px 24px 70px; }
+      .projects-grid { grid-template-columns: 1fr; gap: 20px; }
+      footer { padding: 40px 24px 30px; gap: 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .projects-hero { padding: 60px 20px 40px; }
+      .projects-section { padding: 10px 20px 60px; }
+
+      .nav-actions { gap: 8px; }
+      .nav-btn { width: 42px; height: 42px; }
+      .nav-btn svg { width: 19px; height: 19px; }
+    }
+
+    /* ── CARD TRANSITION (JS-driven) ── */
+    .project-card {
+      transition:
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.4s ease,
+        box-shadow 0.4s ease;
+    }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      .project-card, .badge, .btn-card, .card-image-inner, .card-image img {
+        transition: none !important;
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+      .hero-eyebrow, .projects-hero-title, .projects-hero-subtitle {
+        animation: none !important;
+        opacity: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<script>if(localStorage.getItem('theme')==='light'){document.body.classList.add('light-mode');}</script>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="page-wrapper">
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="index.html" class="logo">
+      <img src="images/DoussaLogo.png" alt="Logo">
+    </a>
+
+    <input type="checkbox" id="nav-toggle" class="nav-toggle-input" />
+
+    <ul class="nav-links">
+      <li><a href="index.html" data-fr="Accueil">Home</a></li>
+      <li><a href="about.html" data-fr="À propos">About</a></li>
+      <li><a href="projects.html" class="active" data-fr="Projets">Projects</a></li>
+      <li><a href="skills.html" data-fr="Compétences">Skills</a></li>
+      <li><a href="fun.html" data-fr="Détente">Fun</a></li>
+      <li><a href="contact.html" data-fr="Contact">Contact</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="theme-btn" class="nav-btn" aria-label="Toggle theme" data-fr-aria="Changer de thème">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2"/><path d="M12 21v2"/>
+          <path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/>
+          <path d="M1 12h2"/><path d="M21 12h2"/>
+          <path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <button id="language-btn" class="nav-btn" aria-label="Change language" data-fr-aria="Changer de langue">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </button>
+
+      <label for="nav-toggle" class="nav-toggle" aria-label="Toggle navigation" data-fr-aria="Basculer la navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+    </div>
+  </nav>
+
+  <!-- ── PROJECTS HERO ── -->
+  <section class="projects-hero">
+    <p class="hero-eyebrow" data-fr="Portfolio">Portfolio</p>
+    <h1 class="projects-hero-title">
+      <span class="white" data-fr="Projets">Featured</span> <span class="red" data-fr="Phares">Projects</span>
+    </h1>
+    <p class="projects-hero-subtitle" data-fr="Des systèmes conçus avec un objectif précis — chacun résolvant un problème réel.">
+      Systems built with purpose — each solving a real problem.
+    </p>
+  </section>
+
+  <!-- ── PROJECTS GRID ── -->
+  <section class="projects-section">
+    <div class="projects-grid" id="projects-grid">
+
+      <!-- ── CARD 1: SmartStock WMS ── -->
+      <article class="project-card" data-tilt>
+        <div class="card-glow"></div>
+        <div class="card-image">
+          <img src="images/projects/smartstock-wms.png" alt="SmartStock WMS">
+          <span class="card-status completed"><span class="status-dot"></span><span data-fr="Terminé">Completed</span></span>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">SmartStock WMS</h2>
+          <p class="card-desc" data-fr="Système intelligent de gestion d'entrepôt avec suivi des stocks en temps réel, rapports automatisés et optimisation des flux de stock.">Intelligent warehouse management system with real-time inventory tracking, automated reporting, and stock-optimization workflows.</p>
+          <div class="card-badges">
+            <span class="badge">Electron.js</span>
+            <span class="badge">JavaScript</span>
+            <span class="badge">Node.js</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="https://efficient-storage-system-77.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-card btn-card-primary">
+            <span data-fr="Voir les détails">View Details</span>
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- ── CARD 2: E-Voting System ── -->
+      <article class="project-card" data-tilt>
+        <div class="card-glow"></div>
+        <div class="card-image">
+          <img src="images/projects/evoting-system.png" alt="E-Voting System">
+          <span class="card-status completed"><span class="status-dot"></span><span data-fr="Terminé">Completed</span></span>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">E-Voting System Backend</h2>
+          <p class="card-desc" data-fr="Plateforme de vote décentralisée permettant aux utilisateurs de voter et de gérer leurs votes en toute sécurité lors de différentes élections, avec des processus transparents et anti-corruption.">Decentralized voting platform that enables users to cast and manage votes securely across different elections, transparent and corruption-eliminating processes.</p>
+          <div class="card-badges">
+            <span class="badge">Python</span>
+            <span class="badge">React.js</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="https://voting-system-lovat-iota.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn-card btn-card-primary">
+            <span data-fr="Voir les détails">View Details</span>
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- ── CARD 3: Age & Gender Detection ── -->
+      <article class="project-card" data-tilt>
+        <div class="card-glow"></div>
+        <div class="card-image">
+          <img src="images/projects/age-gender-detection.jpg" alt="Age & Gender Detection">
+          <span class="card-status completed"><span class="status-dot"></span><span data-fr="Terminé">Completed</span></span>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">Age &amp; Gender Detection</h2>
+          <p class="card-desc" data-fr="Modèle de vision par ordinateur prédisant avec précision l'âge et le genre approximatifs d'une personne à partir d'images ou de flux vidéo grâce à des techniques d'apprentissage profond.">Computer vision model that accurately predicts a person's approximate age and gender from images or video streams using deep learning techniques.</p>
+          <div class="card-badges">
+            <span class="badge">Python</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="https://github.com/hadj-soundous/Age-Gender-Detection" target="_blank" rel="noopener noreferrer" class="btn-card btn-card-primary">
+            <span data-fr="Voir les détails">View Details</span>
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- ── CARD 4: Emotion Detection System ── -->
+      <article class="project-card" data-tilt>
+        <div class="card-glow"></div>
+        <div class="card-image">
+          <img src="images/projects/emotion-detection.png" alt="Emotion Detection System">
+          <span class="card-status completed"><span class="status-dot"></span><span data-fr="Terminé">Completed</span></span>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">Emotion Detection System</h2>
+          <p class="card-desc" data-fr="Système de reconnaissance d'expressions faciales en temps réel qui classe les émotions humaines grâce aux réseaux de neurones convolutifs et à la vision par ordinateur.">Real-time facial expression recognition system that classifies human emotions using convolutional neural networks and computer vision.</p>
+          <div class="card-badges">
+            <span class="badge">Python</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="https://github.com/hadj-soundous/Emotion-Detector" target="_blank" rel="noopener noreferrer" class="btn-card btn-card-primary">
+            <span data-fr="Voir les détails">View Details</span>
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- ── CARD 5: Guangzhou Auto Platform ── -->
+      <article class="project-card" data-tilt>
+        <div class="card-glow"></div>
+        <div class="card-image">
+          <img src="images/projects/guangzhou-auto.png" alt="Guangzhou Auto Platform">
+          <span class="card-status in-progress"><span class="status-dot"></span><span data-fr="En cours">In Progress</span></span>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">Guangzhou Auto Platform</h2>
+          <p class="card-desc" data-fr="Une plateforme complète de suivi et de gestion de véhicules pour le suivi des stocks, la planification et l'automatisation des opérations de concession.">A comprehensive vehicle monitoring and management platform for tracking car inventory, scheduling and automating dealership operations.</p>
+          <div class="card-badges">
+            <span class="badge">Node.js</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="btn-card btn-card-ghost" style="cursor: default; pointer-events: none; opacity: 0.75;" data-fr="Bientôt disponible">
+            Coming Soon
+          </span>
+        </div>
+      </article>
+
+      <!-- ── CARD 6: Movie Recommendation System ── -->
+      <article class="project-card" data-tilt>
+        <div class="card-glow"></div>
+        <div class="card-image">
+          <img src="images/projects/movie-recommendation.jpg" alt="Movie Recommendation System">
+          <span class="card-status in-progress"> <span class="status-dot"></span><span data-fr="En cours">In Progress</span></span>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">Movie Recommendation System</h2>
+          <p class="card-desc" data-fr="Moteur de recommandation basé sur l'IA, fondé sur les préférences et l'historique de l'utilisateur. Il aide les utilisateurs à découvrir et explorer du contenu cinématographique personnalisé.">AI-powered recommendation engine based on user preferences and history. It helps users discover and explore personalized cinema content.</p>
+          <div class="card-badges">
+            <span class="badge">Python</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="btn-card btn-card-ghost" style="cursor: default; pointer-events: none; opacity: 0.75;" data-fr="Bientôt disponible">
+            Coming Soon
+          </span>
+        </div>
+      </article>
+
+      <!-- ── CARD 7: Invest DZ ── -->
+      <article class="project-card" data-tilt>
+        <div class="card-glow"></div>
+        <div class="card-image">
+          <img src="images/projects/invest-dz.png" alt="Invest DZ">
+          <span class="card-status planned"><span class="status-dot"></span><span data-fr="Prévu">Planned</span></span>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">Invest DZ</h2>
+          <p class="card-desc" data-fr="Plateforme de mise en réseau connectant entrepreneurs algériens et investisseurs régionaux pour propulser la prochaine génération de startups locales.">Startup and investor networking platform connecting Algerian entrepreneurs with regional investors to power the next generation of local startups.</p>
+          <div class="card-badges">
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="btn-card btn-card-ghost" style="cursor: default; pointer-events: none; opacity: 0.75;" data-fr="Bientôt disponible">
+            Coming Soon
+          </span>
+        </div>
+      </article>
+
+      <!-- ── CARD 8: Portfolio Chatbot ── -->
+      <article class="project-card" data-tilt>
+        <div class="card-glow"></div>
+        <div class="card-image">
+          <img src="images/projects/portfolio-chatbot.png" alt="Portfolio Chatbot">
+          <span class="card-status planned"><span class="status-dot"></span><span data-fr="Prévu">Planned</span></span>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">Portfolio Chatbot</h2>
+          <p class="card-desc" data-fr="Un site portfolio intelligent permettant aux visiteurs de découvrir projets, compétences et informations de contact via une conversation interactive pilotée par l'IA.">An intelligent portfolio website that enables users to find and explore projects, skills, and contact information through interactive AI-driven conversation.</p>
+          <div class="card-badges">
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="btn-card btn-card-ghost" style="cursor: default; pointer-events: none; opacity: 0.75;" data-fr="Bientôt disponible">
+            Coming Soon
+          </span>
+        </div>
+      </article>
+
+      <!-- ── CARD 9: Portfolio Website ── -->
+      <article class="project-card" data-tilt>
+        <div class="card-glow"></div>
+        <div class="card-image">
+          <img src="images/projects/portfolio-website.png" alt="Portfolio Website">
+          <span class="card-status completed"><span class="status-dot"></span><span data-fr="Terminé">Completed</span></span>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">Portfolio Website</h2>
+          <p class="card-desc" data-fr="Ce portfolio même — un site personnel cinématographique entièrement animé, conçu de A à Z avec Three.js, du glassmorphism et des micro-interactions premium.">This very portfolio — a cinematic, fully animated personal website built from scratch with Three.js, glassmorphism, and premium micro-interactions.</p>
+          <div class="card-badges">
+            <span class="badge">HTML</span>
+            <span class="badge">CSS</span>
+            <span class="badge">Three.js</span>
+            <span class="badge">JavaScript</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="https://github.com/hadj-soundous/Portfolio" class="btn-card btn-card-primary">
+            <span data-fr="Voir les détails">View Details</span>
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <span class="footer-logo">
+      <img src="images/WhiteLogo.png" alt="Logo" class="footer-logo">
+    </span>
+    <p class="footer-copy" data-fr="© 2026 HADJ Soundous — Conçu et développé avec précision cinématographique">© 2026 HADJ Soundous — Designed and Developed with Cinematic Precision</p>
+  </footer>
+
+</div>
+
+<!-- ── THREE.JS ── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- ── THREE.JS BACKGROUND SCENE ── -->
+<script>
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 0, 28);
+
+  const DARK = {
+    bg: 0x0a0305, fog: 0x0a0305, fogDensity: 0.025,
+    star: 0xffffff, starOpacity: 0.55,
+    dust: 0xe8293b, dustOpacity: 0.45,
+    shardW: 0xe8293b, shardWOp: 0.18,
+    shardS: 0xa01b27, shardSOp: 0.10,
+    grid1: 0x3a0810, grid2: 0x1a0408, gridOpacity: 0.35,
+  };
+
+  const LIGHT = {
+    bg: 0xF8F8F8, fog: 0xF8F8F8, fogDensity: 0.022,
+    star: 0xaaaaaa, starOpacity: 0.45,
+    dust: 0xe8293b, dustOpacity: 0.45,
+    shardW: 0xbbbbbb, shardWOp: 0.22,
+    shardS: 0x999999, shardSOp: 0.14,
+    grid1: 0xcccccc, grid2: 0xe0e0e0, gridOpacity: 0.4,
+  };
+
+  let currentTheme = document.body.classList.contains('light-mode') ? LIGHT : DARK;
+
+  function resize() {
+    const W = window.innerWidth, H = window.innerHeight;
+    renderer.setSize(W, H);
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  scene.fog = new THREE.FogExp2(currentTheme.fog, currentTheme.fogDensity);
+
+  // Stars
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 1800;
+  const starPos = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount * 3; i++) starPos[i] = (Math.random() - 0.5) * 180;
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  const starMat = new THREE.PointsMaterial({ color: currentTheme.star, size: 0.12, transparent: true, opacity: currentTheme.starOpacity });
+  scene.add(new THREE.Points(starGeo, starMat));
+
+  // Dust
+  const dustGeo = new THREE.BufferGeometry();
+  const dustCount = 380;
+  const dustPos = new Float32Array(dustCount * 3);
+  const dustSizes = new Float32Array(dustCount);
+  for (let i = 0; i < dustCount; i++) {
+    dustPos[i*3]   = (Math.random() - 0.5) * 90;
+    dustPos[i*3+1] = (Math.random() - 0.5) * 60;
+    dustPos[i*3+2] = (Math.random() - 0.5) * 50;
+    dustSizes[i]   = Math.random() * 0.35 + 0.08;
+  }
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  dustGeo.setAttribute('size',     new THREE.BufferAttribute(dustSizes, 1));
+  const dustMat = new THREE.PointsMaterial({ color: currentTheme.dust, size: 0.22, transparent: true, opacity: currentTheme.dustOpacity, sizeAttenuation: true });
+  const dustPoints = new THREE.Points(dustGeo, dustMat);
+  scene.add(dustPoints);
+
+  // Shards
+  const shardGroup = new THREE.Group();
+  scene.add(shardGroup);
+  const shardMatW = new THREE.MeshBasicMaterial({ color: currentTheme.shardW, wireframe: true, transparent: true, opacity: currentTheme.shardWOp });
+  const shardMatS = new THREE.MeshBasicMaterial({ color: currentTheme.shardS, wireframe: true, transparent: true, opacity: currentTheme.shardSOp });
+  const geoms = [
+    new THREE.TetrahedronGeometry(1.1), new THREE.OctahedronGeometry(0.85),
+    new THREE.IcosahedronGeometry(0.7), new THREE.TetrahedronGeometry(0.6),
+  ];
+  const shardMetas = [];
+  for (let i = 0; i < 18; i++) {
+    const g = geoms[Math.floor(Math.random() * geoms.length)];
+    const m = Math.random() > 0.5 ? shardMatW : shardMatS;
+    const mesh = new THREE.Mesh(g, m);
+    mesh.position.set((Math.random() - 0.5) * 50, (Math.random() - 0.5) * 34, (Math.random() - 0.5) * 20 - 5);
+    mesh.scale.setScalar(Math.random() * 1.6 + 0.5);
+    shardGroup.add(mesh);
+    shardMetas.push({
+      mesh,
+      rotSpeed: new THREE.Vector3((Math.random() - 0.5) * 0.008, (Math.random() - 0.5) * 0.012, (Math.random() - 0.5) * 0.006),
+      floatSpeed: Math.random() * 0.4 + 0.15,
+      floatAmp:   Math.random() * 1.2 + 0.4,
+      floatOffset: Math.random() * Math.PI * 2,
+      baseY: mesh.position.y
+    });
+  }
+
+  // Grid
+  const gridHelper = new THREE.GridHelper(80, 30, currentTheme.grid1, currentTheme.grid2);
+  gridHelper.position.y = -18;
+  gridHelper.material.transparent = true;
+  gridHelper.material.opacity = currentTheme.gridOpacity;
+  scene.add(gridHelper);
+
+  // Mouse parallax
+  const mouse = { x: 0, y: 0 };
+  document.addEventListener('mousemove', e => {
+    mouse.x = (e.clientX / window.innerWidth  - 0.5) * 2;
+    mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  function applyThreeTheme(theme) {
+    renderer.setClearColor(theme.bg, 1);
+    scene.fog.color.setHex(theme.fog);
+    scene.fog.density = theme.fogDensity;
+    starMat.color.setHex(theme.star);
+    starMat.opacity = theme.starOpacity;
+    dustMat.color.setHex(theme.dust);
+    dustMat.opacity = theme.dustOpacity;
+    shardMatW.color.setHex(theme.shardW);
+    shardMatW.opacity = theme.shardWOp;
+    shardMatS.color.setHex(theme.shardS);
+    shardMatS.opacity = theme.shardSOp;
+    if (Array.isArray(gridHelper.material)) {
+      gridHelper.material[0].color.setHex(theme.grid1);
+      gridHelper.material[1].color.setHex(theme.grid2);
+    } else {
+      gridHelper.material.color.setHex(theme.grid1);
+    }
+    gridHelper.material.opacity = theme.gridOpacity;
+  }
+
+  renderer.setClearColor(currentTheme.bg, 1);
+
+  document.addEventListener('themeChanged', function(e) {
+    currentTheme = e.detail.light ? LIGHT : DARK;
+    applyThreeTheme(currentTheme);
+  });
+
+  const clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+
+    camera.position.x += (mouse.x * 2.5 - camera.position.x) * 0.04;
+    camera.position.y += (-mouse.y * 1.5 - camera.position.y) * 0.04;
+    camera.lookAt(0, 0, 0);
+
+    shardMetas.forEach(s => {
+      s.mesh.rotation.x += s.rotSpeed.x;
+      s.mesh.rotation.y += s.rotSpeed.y;
+      s.mesh.rotation.z += s.rotSpeed.z;
+      s.mesh.position.y = s.baseY + Math.sin(t * s.floatSpeed + s.floatOffset) * s.floatAmp;
+    });
+
+    dustPoints.rotation.y = t * 0.015;
+    dustPoints.rotation.x = t * 0.008;
+
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
+
+<!-- ── CARD ANIMATIONS: IntersectionObserver + mouse tilt + cursor glow ── -->
+<script>
+(function() {
+  const cards = document.querySelectorAll('.project-card');
+
+  // ── SCROLL REVEAL via IntersectionObserver ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const card = entry.target;
+        const idx = parseInt(card.dataset.idx, 10);
+        setTimeout(() => {
+          card.classList.add('in-view');
+        }, idx * 90);
+        observer.unobserve(card);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  cards.forEach((card, i) => {
+    card.dataset.idx = i;
+    observer.observe(card);
+  });
+
+  // ── 3D TILT + CURSOR GLOW ──
+  cards.forEach(card => {
+    const glow = card.querySelector('.card-glow');
+    let raf = null;
+    let currentRX = 0, currentRY = 0, targetRX = 0, targetRY = 0;
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function applyTilt() {
+      currentRX = lerp(currentRX, targetRX, 0.1);
+      currentRY = lerp(currentRY, targetRY, 0.1);
+      card.style.transform = `perspective(900px) rotateX(${currentRX}deg) rotateY(${currentRY}deg) translateZ(4px)`;
+      if (Math.abs(currentRX - targetRX) > 0.01 || Math.abs(currentRY - targetRY) > 0.01) {
+        raf = requestAnimationFrame(applyTilt);
+      } else {
+        card.style.transform = `perspective(900px) rotateX(${targetRX}deg) rotateY(${targetRY}deg) translateZ(4px)`;
+        raf = null;
+      }
+    }
+
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width  / 2;
+      const centerY = rect.height / 2;
+
+      targetRY =  ((x - centerX) / centerX) * 7;
+      targetRX = -((y - centerY) / centerY) * 5;
+
+      if (glow) {
+        glow.style.left = x + 'px';
+        glow.style.top  = y + 'px';
+      }
+
+      if (!raf) raf = requestAnimationFrame(applyTilt);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      targetRX = 0;
+      targetRY = 0;
+      if (!raf) raf = requestAnimationFrame(applyTilt);
+      setTimeout(() => {
+        card.style.transform = '';
+      }, 400);
+    });
+  });
+})();
+</script>
+
+<!-- ── THEME + LANGUAGE (shared across all pages) ── -->
+<script src="js/theme.js"></script>
+<script src="js/i18n.js"></script>
+
+</body>
+</html>
