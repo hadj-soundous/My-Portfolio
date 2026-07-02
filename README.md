@@ -109,16 +109,6 @@ portfolio/
 | `contact.html` | Contact form (submits to backend API) |
 | `fun.html` | Extra/experimental page |
 
----
-
-## 📡 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/contact` | Submit a message from the contact form |
-| `GET/POST` | `/api/admin/...` | Admin-only routes |
-
-*(Update this table with your actual route paths and methods.)*
 
 ---
 
@@ -126,13 +116,9 @@ portfolio/
 
 I'm an AI Engineering student (ENSTA Alger) working across AI, security, databases, and networking, alongside freelance work as a UI/UX designer, web developer, and presentation designer.
 
-- **Portfolio:** [add link]
-- **LinkedIn:** [add link]
-- **GitHub:** [add link]
-- **Email:** [add email]
 
 ---
 
 ## 📝 License
 
-This project is open source. Feel free to reference it, but please don't copy the design/content directly. © 2026 [Your Name]
+This project is open source. Feel free to reference it, but please don't copy the design/content directly. © 2026 HADJ Soundous
