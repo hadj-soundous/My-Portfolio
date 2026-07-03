@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const dotenv = require("dotenv");
 const basicAuth = require("express-basic-auth");
+
 dotenv.config();
 
 const connectDB = require("./config/database");
@@ -14,52 +15,42 @@ app.use(express.json());
 app.use(helmet());
 
 (async () => {
+    try {
+        const db = await connectDB();
 
-    const db = await connectDB();
+        app.use("/api/contact", require("./routes/contactRoutes")(db));
 
-    app.use("/api/contact", require("./routes/contactRoutes")(db));
-    app.use(
-    "/admin",
-    basicAuth({
-        users: {
-            admin: "Soundous2026"
-        },
-        challenge: true
-    }),
-    require("./routes/adminRoutes")(db)
-);
-    app.get("/", (req, res) => {
-    app.use("/admin",
+        app.use(
+            "/admin",
+            basicAuth({
+                users: {
+                    admin: "Soundous2026"
+                },
+                challenge: true
+            }),
+            require("./routes/adminRoutes")(db)
+        );
 
-basicAuth({
-
-users:{
-
-admin:"Soundous2026"
-
-},
-
-challenge:true
-
-}),
-
-require("./routes/adminRoutes")(db)
-
-);
-
-        res.json({
-            success: true,
-            message: "Portfolio Backend Running 🚀"
+        app.get("/", (req, res) => {
+            res.json({
+                success: true,
+                message: "Portfolio Backend Running 🚀"
+            });
         });
 
+        const PORT = process.env.PORT || 5000;
+
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+        });
+app.get("/api/test", (req, res) => {
+    res.json({
+        success: true,
+        message: "API is working!"
     });
-
-    const PORT = process.env.PORT || 5000;
-
-    app.listen(PORT, () => {
-
-        console.log(`🚀 Server running on http://localhost:${PORT}`);
-
-    });
-
+});
+    } catch (err) {
+        console.error("Failed to start server:", err);
+        process.exit(1);
+    }
 })();
